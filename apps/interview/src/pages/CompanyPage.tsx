@@ -1,9 +1,34 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import type { KeyboardEvent } from 'react';
 import { useParams, Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { ArrowLeft, MapPin, Briefcase, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  ArrowLeft,
+  MapPin,
+  Briefcase,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  CalendarDays,
+  ExternalLink,
+  Filter,
+  X,
+  MousePointerClick,
+  Building2,
+} from 'lucide-react';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import type { Question, InterviewMode } from '@/types';
+
+interface JobSource {
+  company: string;
+  sourceName: string;
+  sourceUrl?: string;
+  evidenceUrl?: string;
+  firstSeenAt?: string;
+  snapshotDate?: string;
+  status?: string;
+  note?: string;
+}
 
 interface CompanyJob {
   id: string;
@@ -13,6 +38,9 @@ interface CompanyJob {
   level: string;
   tags: string[];
   description: string;
+  source?: JobSource;
+  questionCategories?: string[];
+  questionFocus?: string[];
 }
 
 interface Company {
@@ -33,38 +61,51 @@ interface Props {
   interviewModes: InterviewMode[];
 }
 
-function QuestionCard({ q, index }: { q: Question; index: number }) {
+function QuestionCard({
+  q,
+  index,
+  categoryLabel,
+}: {
+  q: Question;
+  index: number;
+  categoryLabel: string;
+}) {
   const [expanded, setExpanded] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.5) }}
-      className="bg-[#151D2B] border border-[#1E293B] rounded-2xl p-5 transition-all duration-300 hover:border-[rgba(14,165,233,0.2)]"
+      transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.4) }}
+      className="rounded-xl border border-[#1E293B] bg-[#151D2B] p-5 transition-all duration-300 hover:border-[rgba(14,165,233,0.28)]"
     >
-      <div className="flex items-start gap-3 mb-3">
+      <div className="mb-3 flex items-start gap-3">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] px-2 py-0.5 rounded bg-[rgba(14,165,233,0.1)] text-[#0EA5E9] font-medium">
-              {q.category}
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            <span className="rounded bg-[rgba(14,165,233,0.1)] px-2 py-0.5 text-[10px] font-medium text-[#0EA5E9]">
+              {categoryLabel}
             </span>
             <span className="text-[10px] text-[#64748B]">#{q.number}</span>
           </div>
-          <h3 className="font-heading font-semibold text-sm md:text-base text-[#F8FAFC] leading-snug">
+          <h3 className="font-heading text-sm font-semibold leading-snug text-[#F8FAFC] md:text-base">
             <MarkdownRenderer content={q.title} />
           </h3>
         </div>
       </div>
-      <div className="text-[#94A3B8] text-sm leading-relaxed mb-4">
+
+      <div className="mb-4 text-sm leading-relaxed text-[#94A3B8]">
         <MarkdownRenderer content={q.question} />
       </div>
+
       <button
+        type="button"
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-1.5 text-sm text-[#0EA5E9] hover:text-[#06B6D4] transition-colors mb-3"
+        className="mb-3 flex items-center gap-1.5 text-sm text-[#0EA5E9] transition-colors hover:text-[#06B6D4]"
       >
         {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         {expanded ? '收起答案' : '查看答案'}
       </button>
+
       {expanded && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
@@ -72,16 +113,17 @@ function QuestionCard({ q, index }: { q: Question; index: number }) {
           transition={{ duration: 0.3 }}
           className="overflow-hidden"
         >
-          <div className="bg-[#111827] rounded-xl p-5 mb-3">
-            <h4 className="text-xs font-medium text-[#10B981] mb-3">参考答案</h4>
-            <div className="text-[#94A3B8] text-sm leading-loose">
+          <div className="mb-3 rounded-xl bg-[#111827] p-5">
+            <h4 className="mb-3 text-xs font-medium text-[#10B981]">参考答案</h4>
+            <div className="text-sm leading-loose text-[#94A3B8]">
               <MarkdownRenderer content={q.answer} />
             </div>
           </div>
+
           {q.followUp && (
-            <div className="bg-[rgba(245,158,11,0.05)] border border-[rgba(245,158,11,0.15)] rounded-xl p-5">
-              <h4 className="text-xs font-medium text-[#F59E0B] mb-2">追问</h4>
-              <div className="text-[#94A3B8] text-sm leading-loose">
+            <div className="rounded-xl border border-[rgba(245,158,11,0.15)] bg-[rgba(245,158,11,0.05)] p-5">
+              <h4 className="mb-2 text-xs font-medium text-[#F59E0B]">追问</h4>
+              <div className="text-sm leading-loose text-[#94A3B8]">
                 <MarkdownRenderer content={q.followUp} />
               </div>
             </div>
@@ -96,12 +138,19 @@ export default function CompanyPage({ companies, generalQuestions, companyQuesti
   const { companyId } = useParams<{ companyId: string }>();
   const [activeCategory, setActiveCategory] = useState('all');
   const [displayCount, setDisplayCount] = useState(30);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const questionsRef = useRef<HTMLDivElement>(null);
 
   const company = companies.find(c => c.id === companyId);
+  const modeNameById = useMemo(
+    () => Object.fromEntries(interviewModes.map(mode => [mode.id, mode.name])),
+    [interviewModes],
+  );
 
   useEffect(() => {
     setActiveCategory('all');
     setDisplayCount(30);
+    setSelectedJobId(null);
     window.scrollTo(0, 0);
   }, [companyId]);
 
@@ -110,10 +159,8 @@ export default function CompanyPage({ companies, generalQuestions, companyQuesti
     const qs: Question[] = [];
 
     if (company.id === 'deepseek') {
-      // DeepSeek uses general questions
       Object.values(generalQuestions).forEach(arr => qs.push(...arr));
     } else {
-      // Other companies: company-specific questions + relevant general questions
       const companySpecific = companyQuestions[company.id] || [];
       qs.push(...companySpecific);
     }
@@ -121,28 +168,72 @@ export default function CompanyPage({ companies, generalQuestions, companyQuesti
     return qs;
   }, [company, generalQuestions, companyQuestions]);
 
+  const selectedJob = useMemo(() => {
+    if (!company || !selectedJobId) return null;
+    return company.jobs.find(job => job.id === selectedJobId) || null;
+  }, [company, selectedJobId]);
+
+  const jobScopedQuestions = useMemo(() => {
+    const relatedCategories = selectedJob?.questionCategories || [];
+    if (!relatedCategories.length) return allQuestions;
+    return allQuestions.filter(q => relatedCategories.includes(q.category));
+  }, [allQuestions, selectedJob]);
+
   const filteredQuestions = useMemo(() => {
-    let qs = activeCategory === 'all' ? allQuestions : allQuestions.filter(q => q.category === activeCategory);
-    return qs;
-  }, [activeCategory, allQuestions]);
+    if (activeCategory === 'all') return jobScopedQuestions;
+    return jobScopedQuestions.filter(q => q.category === activeCategory);
+  }, [activeCategory, jobScopedQuestions]);
 
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: allQuestions.length };
-    interviewModes.forEach(m => {
-      counts[m.id] = allQuestions.filter(q => q.category === m.id).length;
+    const counts: Record<string, number> = { all: jobScopedQuestions.length };
+    interviewModes.forEach(mode => {
+      counts[mode.id] = jobScopedQuestions.filter(q => q.category === mode.id).length;
     });
     return counts;
-  }, [allQuestions, interviewModes]);
+  }, [jobScopedQuestions, interviewModes]);
+
+  const visibleModes = useMemo(() => {
+    if (!selectedJob) return interviewModes;
+    return interviewModes.filter(mode => (categoryCounts[mode.id] || 0) > 0);
+  }, [categoryCounts, interviewModes, selectedJob]);
 
   const paginatedQuestions = filteredQuestions.slice(0, displayCount);
   const hasMore = displayCount < filteredQuestions.length;
 
+  const selectJob = (job: CompanyJob) => {
+    const nextJobId = selectedJobId === job.id ? null : job.id;
+    setSelectedJobId(nextJobId);
+    setActiveCategory('all');
+    setDisplayCount(30);
+
+    if (nextJobId) {
+      window.requestAnimationFrame(() => {
+        questionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  };
+
+  const clearJobFilter = () => {
+    setSelectedJobId(null);
+    setActiveCategory('all');
+    setDisplayCount(30);
+  };
+
+  const onJobKeyDown = (event: KeyboardEvent<HTMLElement>, job: CompanyJob) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      selectJob(job);
+    }
+  };
+
   if (!company) {
     return (
-      <div className="min-h-[100dvh] flex items-center justify-center bg-[#0B0F1A]">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-[#0B0F1A]">
         <div className="text-center">
-          <p className="text-[#94A3B8] mb-4">公司未找到</p>
-          <Link to="/" className="text-[#0EA5E9] text-sm hover:underline">返回首页</Link>
+          <p className="mb-4 text-[#94A3B8]">公司未找到</p>
+          <Link to="/" className="text-sm text-[#0EA5E9] hover:underline">
+            返回首页
+          </Link>
         </div>
       </div>
     );
@@ -152,28 +243,27 @@ export default function CompanyPage({ companies, generalQuestions, companyQuesti
 
   return (
     <div className="min-h-[100dvh] bg-[#0B0F1A]">
-      {/* Company Banner */}
-      <section className="relative pt-16 pb-12 overflow-hidden"
+      <section
+        className="relative overflow-hidden pb-12 pt-16"
         style={{ background: `linear-gradient(135deg, #0B0F1A 0%, ${companyColor}15 50%, #0B0F1A 100%)` }}
       >
-        <div className="max-w-[1280px] mx-auto px-6 pt-12">
-          <Link to="/" className="inline-flex items-center gap-1 text-sm text-[#94A3B8] hover:text-[#0EA5E9] transition-colors mb-6">
+        <div className="mx-auto max-w-[1280px] px-6 pt-12">
+          <Link
+            to="/"
+            className="mb-6 inline-flex items-center gap-1 text-sm text-[#94A3B8] transition-colors hover:text-[#0EA5E9]"
+          >
             <ArrowLeft size={14} />
             返回首页
           </Link>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center gap-4 mb-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <div className="mb-4 flex items-center gap-4">
               <span className="text-5xl">{company.logo}</span>
               <div>
-                <h1 className="font-display font-bold text-[28px] md:text-[40px] text-[#F8FAFC]">
+                <h1 className="font-display text-[28px] font-bold text-[#F8FAFC] md:text-[40px]">
                   {company.name}
                 </h1>
-                <p className="text-[#94A3B8] text-sm">{company.description}</p>
+                <p className="text-sm text-[#94A3B8]">{company.description}</p>
               </div>
             </div>
 
@@ -191,91 +281,188 @@ export default function CompanyPage({ companies, generalQuestions, companyQuesti
         </div>
       </section>
 
-      {/* Jobs Section */}
-      <section className="py-8 bg-[#0B0F1A]">
-        <div className="max-w-[1280px] mx-auto px-6">
+      <section className="bg-[#0B0F1A] py-8">
+        <div className="mx-auto max-w-[1280px] px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between"
           >
-            <h2 className="font-display font-semibold text-xl md:text-2xl text-[#F8FAFC] mb-6">
-              招聘岗位
-            </h2>
+            <div>
+              <h2 className="font-display text-xl font-semibold text-[#F8FAFC] md:text-2xl">招聘岗位</h2>
+              <p className="mt-2 text-sm text-[#94A3B8]">点击岗位卡片，题库会自动切到对应面试维度。</p>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#1E293B] px-3 py-1.5 text-xs text-[#94A3B8]">
+              <MousePointerClick size={13} className="text-[#0EA5E9]" />
+              岗位绑定题库
+            </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {company.jobs.map((job, i) => (
-              <motion.div
-                key={job.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="bg-[#151D2B] border border-[#1E293B] rounded-2xl p-5 hover:border-[rgba(14,165,233,0.3)] transition-all"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="font-heading font-semibold text-base text-[#F8FAFC]">{job.title}</h3>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(14,165,233,0.1)] text-[#0EA5E9] font-medium shrink-0">
-                    {job.level}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-[#64748B] text-xs mb-2">
-                  <MapPin size={12} />
-                  {job.location}
-                </div>
-                <p className="text-[#94A3B8] text-xs leading-relaxed mb-3">{job.description}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {job.tags.map(tag => (
-                    <span key={tag} className="text-[10px] px-2 py-0.5 rounded-md bg-[rgba(14,165,233,0.08)] text-[#06B6D4]">
-                      {tag}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {company.jobs.map((job, i) => {
+              const isSelected = selectedJobId === job.id;
+              const sourceUrl = job.source?.sourceUrl || job.source?.evidenceUrl;
+              const relatedLabels = (job.questionCategories || []).map(id => modeNameById[id] || id);
+
+              return (
+                <motion.article
+                  key={job.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => selectJob(job)}
+                  onKeyDown={event => onJobKeyDown(event, job)}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.04 }}
+                  className={`cursor-pointer rounded-xl border p-5 text-left transition-all ${
+                    isSelected
+                      ? 'border-[#0EA5E9] bg-[rgba(14,165,233,0.12)] shadow-[0_0_0_1px_rgba(14,165,233,0.22)]'
+                      : 'border-[#1E293B] bg-[#151D2B] hover:border-[rgba(14,165,233,0.35)]'
+                  }`}
+                >
+                  <div className="mb-3 flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <h3 className="font-heading text-base font-semibold text-[#F8FAFC]">{job.title}</h3>
+                      <div className="mt-2 flex items-center gap-1 text-xs text-[#64748B]">
+                        <MapPin size={12} />
+                        {job.location}
+                      </div>
+                    </div>
+                    <span className="shrink-0 rounded-md bg-[rgba(14,165,233,0.1)] px-2 py-0.5 text-[10px] font-medium text-[#0EA5E9]">
+                      {job.level}
                     </span>
-                  ))}
-                </div>
-                <div className="mt-3 text-xs text-[#F59E0B] font-medium">{job.salary}</div>
-              </motion.div>
-            ))}
+                  </div>
+
+                  <p className="mb-3 text-xs leading-relaxed text-[#94A3B8]">{job.description}</p>
+
+                  <div className="mb-3 flex flex-wrap gap-1.5">
+                    {job.tags.map(tag => (
+                      <span key={tag} className="rounded-md bg-[rgba(14,165,233,0.08)] px-2 py-0.5 text-[10px] text-[#06B6D4]">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {job.source && (
+                    <div className="mb-3 grid gap-2 rounded-lg border border-[#1E293B] bg-[#0B1220] p-3 text-[11px] text-[#94A3B8] sm:grid-cols-3">
+                      <span className="inline-flex items-center gap-1">
+                        <CalendarDays size={12} className="text-[#38BDF8]" />
+                        {job.source.firstSeenAt ? `起始 ${job.source.firstSeenAt}` : '起始待核验'}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Building2 size={12} className="text-[#38BDF8]" />
+                        {job.source.company}
+                      </span>
+                      {sourceUrl ? (
+                        <a
+                          href={sourceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={event => event.stopPropagation()}
+                          className="inline-flex items-center gap-1 text-[#38BDF8] hover:text-[#7DD3FC]"
+                        >
+                          {job.source.sourceName}
+                          <ExternalLink size={11} />
+                        </a>
+                      ) : (
+                        <span>{job.source.sourceName}</span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="text-xs font-medium text-[#F59E0B]">{job.salary}</div>
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-[#0B1220] px-3 py-1 text-[11px] text-[#94A3B8]">
+                      <Filter size={12} className={isSelected ? 'text-[#0EA5E9]' : 'text-[#64748B]'} />
+                      {relatedLabels.length ? `${relatedLabels.length} 个题库维度` : '查看岗位题目'}
+                    </div>
+                  </div>
+                </motion.article>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Questions Section */}
-      <section className="py-8 bg-[#0B0F1A]">
-        <div className="max-w-[1280px] mx-auto px-6">
+      <section ref={questionsRef} className="bg-[#0B0F1A] py-8">
+        <div className="mx-auto max-w-[1280px] px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="font-display font-semibold text-xl md:text-2xl text-[#F8FAFC] mb-2">
-              面试真题
-            </h2>
-            <p className="text-[#94A3B8] text-sm mb-6">
-              共 {allQuestions.length} 道{company.id !== 'deepseek' ? '公司专项' : ''}面试题
+            <h2 className="font-display mb-2 text-xl font-semibold text-[#F8FAFC] md:text-2xl">面试真题</h2>
+            <p className="mb-6 text-sm text-[#94A3B8]">
+              共 {jobScopedQuestions.length} 道{company.id !== 'deepseek' ? '公司专项' : ''}面试题
             </p>
           </motion.div>
 
-          {/* Category Tabs */}
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
+          {selectedJob && (
+            <div className="mb-5 rounded-xl border border-[rgba(14,165,233,0.28)] bg-[rgba(14,165,233,0.08)] p-4">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <div className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-[#7DD3FC]">
+                    <Filter size={15} />
+                    已按岗位筛选：{selectedJob.title}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(selectedJob.questionFocus || []).map(item => (
+                      <span key={item} className="rounded-md bg-[#0B1220] px-2 py-1 text-[11px] text-[#CBD5E1]">
+                        {item}
+                      </span>
+                    ))}
+                    {(selectedJob.questionCategories || []).map(id => (
+                      <span key={id} className="rounded-md bg-[rgba(16,185,129,0.12)] px-2 py-1 text-[11px] text-[#34D399]">
+                        {modeNameById[id] || id}
+                      </span>
+                    ))}
+                  </div>
+                  {selectedJob.source?.note && (
+                    <p className="mt-3 text-xs text-[#94A3B8]">{selectedJob.source.note}</p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={clearJobFilter}
+                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-[#1E293B] px-3 py-2 text-sm text-[#CBD5E1] transition-colors hover:border-[#38BDF8] hover:text-[#7DD3FC]"
+                >
+                  <X size={14} />
+                  清除筛选
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
             <button
-              onClick={() => setActiveCategory('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              type="button"
+              onClick={() => {
+                setActiveCategory('all');
+                setDisplayCount(30);
+              }}
+              className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                 activeCategory === 'all'
-                  ? 'bg-[rgba(14,165,233,0.15)] text-[#0EA5E9] border-b-2 border-[#0EA5E9]'
+                  ? 'border-b-2 border-[#0EA5E9] bg-[rgba(14,165,233,0.15)] text-[#0EA5E9]'
                   : 'text-[#64748B] hover:text-[#94A3B8]'
               }`}
             >
               全部 ({categoryCounts.all || 0})
             </button>
-            {interviewModes.map(mode => (
+            {visibleModes.map(mode => (
               <button
+                type="button"
                 key={mode.id}
-                onClick={() => setActiveCategory(mode.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                onClick={() => {
+                  setActiveCategory(mode.id);
+                  setDisplayCount(30);
+                }}
+                className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                   activeCategory === mode.id
-                    ? 'bg-[rgba(14,165,233,0.15)] text-[#0EA5E9] border-b-2 border-[#0EA5E9]'
+                    ? 'border-b-2 border-[#0EA5E9] bg-[rgba(14,165,233,0.15)] text-[#0EA5E9]'
                     : 'text-[#64748B] hover:text-[#94A3B8]'
                 }`}
               >
@@ -284,23 +471,21 @@ export default function CompanyPage({ companies, generalQuestions, companyQuesti
             ))}
           </div>
 
-          {/* Questions List */}
           <div className="space-y-4">
             {paginatedQuestions.map((q, i) => (
-              <QuestionCard key={q.id} q={q} index={i} />
+              <QuestionCard key={q.id} q={q} index={i} categoryLabel={modeNameById[q.category] || q.category} />
             ))}
 
             {filteredQuestions.length === 0 && (
-              <div className="text-center text-[#64748B] py-12">
-                未找到匹配的面试题
-              </div>
+              <div className="py-12 text-center text-[#64748B]">未找到匹配的面试题</div>
             )}
 
             {hasMore && (
-              <div className="flex justify-center mt-6">
+              <div className="mt-6 flex justify-center">
                 <button
+                  type="button"
                   onClick={() => setDisplayCount(prev => prev + 30)}
-                  className="px-6 py-2.5 rounded-xl bg-[#151D2B] border border-[#1E293B] text-[#94A3B8] text-sm hover:border-[rgba(14,165,233,0.4)] hover:text-[#0EA5E9] transition-all flex items-center gap-2"
+                  className="flex items-center gap-2 rounded-xl border border-[#1E293B] bg-[#151D2B] px-6 py-2.5 text-sm text-[#94A3B8] transition-all hover:border-[rgba(14,165,233,0.4)] hover:text-[#0EA5E9]"
                 >
                   加载更多 ({filteredQuestions.length - displayCount} 道剩余)
                   <ChevronDown size={14} />

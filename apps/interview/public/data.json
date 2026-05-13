@@ -20,7 +20,27 @@
             "PyTorch",
             "大模型对齐"
           ],
-          "description": "Agent方向核心技术攻坚角色"
+          "description": "Agent方向核心技术攻坚角色，关注规划、反思、工具调用与长程任务优化。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "algo_rl",
+            "system"
+          ],
+          "questionFocus": [
+            "RLHF",
+            "PPO/DPO",
+            "Agent规划",
+            "长程推理"
+          ]
         },
         {
           "id": "ds_agent_data",
@@ -33,7 +53,28 @@
             "评测设计",
             "AI编程工具"
           ],
-          "description": "Agent方向数据架构师与评测设计师"
+          "description": "Agent方向数据架构师与评测设计师，负责数据策略、任务拆解与质量闭环。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "data_strategy",
+            "system",
+            "product"
+          ],
+          "questionFocus": [
+            "数据策略",
+            "评测体系",
+            "任务分解",
+            "质量闭环"
+          ]
         },
         {
           "id": "ds_agent_fullstack",
@@ -47,7 +88,27 @@
             "Docker/K8s",
             "MCP"
           ],
-          "description": "Agent方向基础设施架构师"
+          "description": "Agent方向基础设施架构师，负责工具链、服务编排、前后端与部署链路。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "engineering",
+            "system"
+          ],
+          "questionFocus": [
+            "MCP",
+            "服务编排",
+            "工程化",
+            "容器化部署"
+          ]
         },
         {
           "id": "ds_agent_pm",
@@ -60,7 +121,303 @@
             "竞品分析",
             "Agent机制"
           ],
-          "description": "Agent方向战略定义者"
+          "description": "Agent方向战略定义者，负责场景判断、机制设计、指标拆解与产品验证。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "product",
+            "data_strategy",
+            "behavior"
+          ],
+          "questionFocus": [
+            "产品策略",
+            "Agent机制",
+            "竞品分析",
+            "指标体系"
+          ]
+        },
+        {
+          "id": "ds_research_deep_learning",
+          "title": "深度学习研究员",
+          "salary": "面议",
+          "location": "杭州/北京",
+          "level": "研究岗",
+          "tags": [
+            "LLM",
+            "RLHF/RLAIF",
+            "过程奖励",
+            "偏好学习"
+          ],
+          "description": "面向大模型推理、生成、指令遵循等方向做原创研究与实验验证。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "algo_rl",
+            "system"
+          ],
+          "questionFocus": [
+            "大模型训练",
+            "对齐算法",
+            "奖励建模",
+            "实验设计"
+          ]
+        },
+        {
+          "id": "ds_search_algorithm",
+          "title": "搜索算法研究员",
+          "salary": "面议",
+          "location": "杭州/北京",
+          "level": "研究岗",
+          "tags": [
+            "LLM+Search",
+            "RAG",
+            "多语言检索",
+            "可信搜索"
+          ],
+          "description": "探索 LLM 与搜索引擎深度融合，提升长尾知识获取与内容可信度。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "algo_rl",
+            "engineering",
+            "system"
+          ],
+          "questionFocus": [
+            "RAG",
+            "检索排序",
+            "可信答案",
+            "多语言搜索"
+          ]
+        },
+        {
+          "id": "ds_dl_engineer",
+          "title": "深度学习研发工程师",
+          "salary": "面议",
+          "location": "杭州/北京",
+          "level": "中高级",
+          "tags": [
+            "PyTorch",
+            "分布式训练",
+            "推理优化",
+            "C++"
+          ],
+          "description": "连接算法与系统，负责训练、推理和模型工程化链路优化。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "engineering",
+            "algo_rl",
+            "system"
+          ],
+          "questionFocus": [
+            "分布式训练",
+            "推理优化",
+            "PyTorch",
+            "性能调优"
+          ]
+        },
+        {
+          "id": "ds_core_system",
+          "title": "核心系统研发工程师",
+          "salary": "面议",
+          "location": "杭州",
+          "level": "高级",
+          "tags": [
+            "高性能计算",
+            "CUDA",
+            "RDMA",
+            "训练框架"
+          ],
+          "description": "面向 LLM 训练与推理基础设施做底层系统、调度与性能优化。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "system",
+            "engineering"
+          ],
+          "questionFocus": [
+            "高性能系统",
+            "CUDA/RDMA",
+            "分布式调度",
+            "可观测性"
+          ]
+        },
+        {
+          "id": "ds_client_engineer",
+          "title": "客户端研发工程师",
+          "salary": "面议",
+          "location": "北京/杭州",
+          "level": "工程岗",
+          "tags": [
+            "客户端",
+            "跨平台",
+            "AI产品",
+            "体验优化"
+          ],
+          "description": "将大模型能力集成到桌面端、移动端等终端产品体验中。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "engineering",
+            "product"
+          ],
+          "questionFocus": [
+            "跨平台体验",
+            "AI产品集成",
+            "性能优化",
+            "用户反馈"
+          ]
+        },
+        {
+          "id": "ds_frontend_engineer",
+          "title": "前端研发工程师",
+          "salary": "面议",
+          "location": "北京/杭州",
+          "level": "工程岗",
+          "tags": [
+            "TypeScript",
+            "React/Vue",
+            "AI Native UI",
+            "性能优化"
+          ],
+          "description": "负责 AI 原生产品界面、交互体验、工程质量与前端性能优化。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "engineering",
+            "product"
+          ],
+          "questionFocus": [
+            "AI Native UI",
+            "前端工程化",
+            "交互状态",
+            "性能优化"
+          ]
+        },
+        {
+          "id": "ds_test_engineer",
+          "title": "测试开发工程师",
+          "salary": "面议",
+          "location": "北京/杭州",
+          "level": "工程岗",
+          "tags": [
+            "自动化测试",
+            "质量体系",
+            "CI/CD",
+            "性能测试"
+          ],
+          "description": "构建自动化测试与质量保障体系，支撑大模型产品稳定交付。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "engineering",
+            "system",
+            "behavior"
+          ],
+          "questionFocus": [
+            "自动化测试",
+            "质量闭环",
+            "CI/CD",
+            "稳定性治理"
+          ]
+        },
+        {
+          "id": "ds_ai_cluster_ops",
+          "title": "AI超算集群运维工程师",
+          "salary": "面议",
+          "location": "杭州",
+          "level": "基础设施",
+          "tags": [
+            "GPU集群",
+            "InfiniBand/RDMA",
+            "Slurm/K8s",
+            "监控告警"
+          ],
+          "description": "负责 AI 超算集群日常运维、监控、故障恢复和资源调度。",
+          "source": {
+            "company": "DeepSeek",
+            "sourceName": "DeepSeek 官方招聘页（Moka）",
+            "sourceUrl": "https://app.mokahr.com/social-recruitment/high-flyer/140576#/",
+            "evidenceUrl": "https://news.bloomberglaw.com/daily-labor-report/deepseek-seeks-agentic-ai-workers-after-cutting-edge-models",
+            "firstSeenAt": "2026-03-25",
+            "snapshotDate": "2026-03-25",
+            "status": "公开招聘快照",
+            "note": "岗位来自 DeepSeek 官方招聘页相关快照整理，招聘状态与 JD 细节请以官方页面为准。"
+          },
+          "questionCategories": [
+            "system",
+            "engineering"
+          ],
+          "questionFocus": [
+            "GPU集群",
+            "资源调度",
+            "监控告警",
+            "故障恢复"
+          ]
         }
       ],
       "questionCount": 518

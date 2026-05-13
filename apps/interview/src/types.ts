@@ -56,6 +56,41 @@ export interface InterviewMode {
   count: number;
 }
 
+export interface JobSource {
+  company: string;
+  sourceName: string;
+  sourceUrl?: string;
+  evidenceUrl?: string;
+  firstSeenAt?: string;
+  snapshotDate?: string;
+  status?: string;
+  note?: string;
+}
+
+export interface CompanyJob {
+  id: string;
+  title: string;
+  salary: string;
+  location: string;
+  level: string;
+  tags: string[];
+  description: string;
+  source?: JobSource;
+  questionCategories?: string[];
+  questionFocus?: string[];
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  color: string;
+  gradient: string;
+  jobs: CompanyJob[];
+  questionCount: number;
+}
+
 export interface Question {
   id: string;
   number: number;
