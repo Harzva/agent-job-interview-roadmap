@@ -1,0 +1,63 @@
+name: Sync Interview Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - apps/interview/**
+      - .github/workflows/sync-interview-pages.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-interview-pages
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/interview/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/interview
+        run: npm ci
+
+      - name: Build interview app
+        working-directory: apps/interview
+        run: npm run build
+
+      - name: Sync dist to docs
+        shell: bash
+        run: |
+          mkdir -p docs/interview
+          find docs/interview -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          cp -R apps/interview/dist/. docs/interview/
+          touch docs/interview/.nojekyll
+
+      - name: Commit Pages artifacts
+        shell: bash
+        run: |
+          if git diff --quiet -- docs/interview; then
+            echo "docs/interview is already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/interview
+          git commit -m "chore: sync interview pages"
+          git push
